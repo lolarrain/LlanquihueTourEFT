@@ -1,36 +1,56 @@
 package util;
 
 /**
- * Proporciona métodos para validar y formatear RUT chilenos.
+ * Proporciona métodos para validar y formatear RUT.
+ *
+ * La validación comprueba únicamente su estructura,
+ * permitiendo utilizar RUT de prueba.
  */
 public final class ValidadorRut {
 
+    /**
+     * Impide crear objetos de esta clase utilitaria.
+     */
     private ValidadorRut() {
     }
 
+    /**
+     * Comprueba que el RUT tenga un formato básico válido.
+     *
+     * Se aceptan siete u ocho números y un dígito
+     * verificador numérico o la letra K.
+     *
+     * @param rut RUT que se desea validar.
+     * @return true si cumple con la estructura esperada.
+     */
     public static boolean esValido(String rut) {
         if (rut == null || rut.isBlank()) {
             return false;
         }
 
-        String rutLimpio = limpiar(rut);
+        String entrada = rut
+                .replace(" ", "")
+                .toUpperCase();
 
-        if (!rutLimpio.matches("\\d{7,8}[0-9K]")) {
-            return false;
-        }
+        boolean formatoConPuntos =
+                entrada.matches(
+                        "\\d{1,2}\\.\\d{3}\\.\\d{3}-?[0-9K]"
+                );
 
-        String cuerpo = rutLimpio.substring(
-                0,
-                rutLimpio.length() - 1
-        );
+        boolean formatoSinPuntos =
+                entrada.matches(
+                        "\\d{7,8}-?[0-9K]"
+                );
 
-        char digitoIngresado =
-                rutLimpio.charAt(rutLimpio.length() - 1);
-
-        return digitoIngresado
-                == calcularDigitoVerificador(cuerpo);
+        return formatoConPuntos || formatoSinPuntos;
     }
 
+    /**
+     * Elimina puntos, espacios y guion del RUT.
+     *
+     * @param rut RUT que se desea limpiar.
+     * @return RUT sin caracteres de formato.
+     */
     public static String limpiar(String rut) {
         if (rut == null) {
             return "";
@@ -43,51 +63,30 @@ public final class ValidadorRut {
                 .toUpperCase();
     }
 
+    /**
+     * Normaliza el RUT utilizando un guion antes
+     * del dígito verificador.
+     *
+     * NO comprueba matemáticamente el dígito verificador.
+     *
+     * @param rut RUT que se desea formatear.
+     * @return RUT normalizado.
+     * @throws RutInvalidoException si el formato no es válido.
+     */
     public static String formatear(String rut)
             throws RutInvalidoException {
 
         if (!esValido(rut)) {
             throw new RutInvalidoException(
-                    "El RUT no es válido: " + rut
+                    "El formato del RUT no es válido: " + rut
             );
         }
 
-        String limpio = limpiar(rut);
-        int posicionDigito = limpio.length() - 1;
+        String rutLimpio = limpiar(rut);
+        int posicionDigito = rutLimpio.length() - 1;
 
-        return limpio.substring(0, posicionDigito)
+        return rutLimpio.substring(0, posicionDigito)
                 + "-"
-                + limpio.charAt(posicionDigito);
-    }
-
-    private static char calcularDigitoVerificador(
-            String cuerpo
-    ) {
-        int suma = 0;
-        int multiplicador = 2;
-
-        for (int i = cuerpo.length() - 1; i >= 0; i--) {
-            int digito =
-                    Character.getNumericValue(cuerpo.charAt(i));
-
-            suma += digito * multiplicador;
-            multiplicador++;
-
-            if (multiplicador > 7) {
-                multiplicador = 2;
-            }
-        }
-
-        int resultado = 11 - (suma % 11);
-
-        if (resultado == 11) {
-            return '0';
-        }
-
-        if (resultado == 10) {
-            return 'K';
-        }
-
-        return Character.forDigit(resultado, 10);
+                + rutLimpio.charAt(posicionDigito);
     }
 }

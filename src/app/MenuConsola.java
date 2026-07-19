@@ -10,6 +10,7 @@ import model.Reserva;
 import model.SalidaTour;
 import model.Tour;
 import util.RutInvalidoException;
+import util.ValidadorRut;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -490,56 +491,90 @@ public class MenuConsola {
     }
 
     /**
-     * Busca al cliente y lo registra cuando todavía no existe.
+     * Busca un cliente mediante su RUT normalizado.
+     * Si no existe, permite registrarlo sin depender
+     * del formato utilizado para ingresar el RUT.
+     *
+     * @return cliente encontrado o registrado.
+     * @throws RutInvalidoException si ocurre un error al registrar.
      */
     private Cliente obtenerORegistrarCliente()
             throws RutInvalidoException {
 
-        System.out.print("RUT del cliente: ");
-        String rut = scanner.nextLine();
+        while (true) {
+            System.out.print("RUT del cliente: ");
+            String rutIngresado = scanner.nextLine();
 
-        Cliente cliente = gestor.buscarCliente(rut);
+            String rutNormalizado;
 
-        if (cliente != null) {
+            try {
+                rutNormalizado =
+                        ValidadorRut.formatear(rutIngresado);
+            } catch (RutInvalidoException e) {
+                System.out.println(
+                        "El RUT ingresado no es válido."
+                );
+                continue;
+            }
+
+            Persona persona =
+                    gestor.buscarPersona(rutNormalizado);
+
+            if (persona instanceof Cliente cliente) {
+                System.out.println(
+                        "Cliente encontrado: "
+                                + cliente.getNombre()
+                );
+
+                return cliente;
+            }
+
+            if (persona != null) {
+                System.out.println(
+                        "El RUT ya pertenece a un "
+                                + persona.getClass().getSimpleName()
+                                + "."
+                );
+                System.out.println(
+                        "Ingrese el RUT de otro cliente."
+                );
+                continue;
+            }
+
             System.out.println(
-                    "Cliente encontrado: " + cliente.getNombre()
+                    "El cliente no se encuentra registrado."
+            );
+            System.out.println(
+                    "Ingrese sus datos para continuar."
             );
 
-            return cliente;
+            System.out.print("Nombre: ");
+            String nombre = scanner.nextLine();
+
+            System.out.print("Teléfono: ");
+            String telefono = scanner.nextLine();
+
+            Direccion direccion = leerDireccion();
+
+            System.out.print("Correo: ");
+            String correo = scanner.nextLine();
+
+            Cliente nuevoCliente =
+                    gestor.registrarCliente(
+                            rutNormalizado,
+                            nombre,
+                            telefono,
+                            direccion,
+                            correo
+                    );
+
+            System.out.println(
+                    "Nuevo cliente registrado: "
+                            + nuevoCliente.getNombre()
+            );
+
+            return nuevoCliente;
         }
-
-        System.out.println(
-                "El cliente no se encuentra registrado."
-        );
-        System.out.println(
-                "Ingrese sus datos para continuar."
-        );
-
-        System.out.print("Nombre: ");
-        String nombre = scanner.nextLine();
-
-        System.out.print("Teléfono: ");
-        String telefono = scanner.nextLine();
-
-        Direccion direccion = leerDireccion();
-
-        System.out.print("Correo: ");
-        String correo = scanner.nextLine();
-
-        Cliente nuevoCliente = gestor.registrarCliente(
-                rut,
-                nombre,
-                telefono,
-                direccion,
-                correo
-        );
-
-        System.out.println(
-                "Nuevo cliente registrado: "
-                        + nuevoCliente.getNombre()
-        );
-
-        return nuevoCliente;
     }
 
     /**
