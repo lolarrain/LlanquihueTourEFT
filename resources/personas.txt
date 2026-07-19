@@ -1,0 +1,5 @@
+CLIENTE;12345678-5;Camila Soto;+56987654321;Los Alerces;120;Puerto Varas;Los Lagos;camila.soto@email.cl
+CLIENTE;98765432-5;Martín Pérez;+56976543210;San Francisco;455;Puerto Montt;Los Lagos;martin.perez@email.cl
+GUIA;11111111-1;Diego Muñoz;+56965432109;Imperial;321;Puerto Varas;Los Lagos;Turismo de naturaleza
+GUIA;33333333-3;Sofía González;+56954321098;Los Robles;78;Frutillar;Los Lagos;Patrimonio cultural
+PROVEEDOR;22222222-2;Carlos Ramírez;+56943210987;Vicente Pérez Rosales;900;Puerto Montt;Los Lagos;Transporte turístico

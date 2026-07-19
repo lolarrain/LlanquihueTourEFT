@@ -1,0 +1,3 @@
+T001;Ruta del Lago Llanquihue;Puerto Varas y Frutillar;45000;Salida desde Puerto Varas|Visita al borde costero|Almuerzo en Frutillar|Regreso a Puerto Varas
+T002;Saltos del Petrohué;Parque Nacional Vicente Pérez Rosales;52000;Encuentro en Puerto Varas|Traslado al parque nacional|Recorrido por los Saltos del Petrohué|Regreso
+T003;Patrimonio de Frutillar;Frutillar;38000;Visita al Museo Colonial Alemán|Recorrido por el Teatro del Lago|Paseo por la costanera
